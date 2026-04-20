@@ -56,7 +56,7 @@ if (!jQuery.browser) {
 			containment:"body",
 			cssURL:"css/",
 			skin:"white",
-			overlayBackground:"#333",
+			overlayBackground:"#334",
 			exifData:false, //todo
 
 			printOutThumbs:false,
