@@ -2,47 +2,34 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred-id')
-        IMAGE_NAME = 'muniraju89docker/website'
+        IMAGE_NAME = "my-website"
+        CONTAINER_NAME = "website-container"
     }
 
     stages {
 
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/munirajusrk/orlifes.git'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
-                sh 'docker build -t $IMAGE_NAME:$BUILD_NUMBER .'
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Stop Old Container') {
             steps {
-                echo 'Pushing image to DockerHub...'
-                sh '''
-                  echo $DOCKERHUB_CREDENTIALS_PSW | docker login \
-                  -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                  docker push $IMAGE_NAME:$BUILD_NUMBER
-                '''
+                sh 'docker rm -f $CONTAINER_NAME || true'
             }
         }
 
-        stage('Deploy to Stage') {
+        stage('Run New Container') {
             steps {
-                echo 'Deploying application...'
-                sh '''
-                  docker rm -f website || true
-                  docker run -d --name website -p 8000:8000 $IMAGE_NAME:$BUILD_NUMBER
-                '''
+                sh 'docker run -d -p 80:80 --name $CONTAINER_NAME $IMAGE_NAME'
             }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Build, Push, and Deploy MunirajuS completed successfully!'
-        }
-        failure {
-            echo '❌ Pipeline failed. Check logs.'
         }
     }
 }
