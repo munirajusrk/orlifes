@@ -31,7 +31,7 @@ pipeline {
                 echo 'Deploying application...'
                 sh '''
                   docker rm -f website || true
-                  docker run -d --name website -p 6000:6000 $IMAGE_NAME:$BUILD_NUMBER
+                  docker run -d --name website -p 8080:8080 $IMAGE_NAME:$BUILD_NUMBER
                 '''
             }
         }
